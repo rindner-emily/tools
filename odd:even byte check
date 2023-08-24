@@ -1,16 +1,23 @@
+# imports
 import SimpleITK as sitk
 import numpy as np
 import os
 import pydicom
 
-dicom = 'rvlv_ratio_output.dcm'
-dcm_ds = pydicom.read_file(dicom)
+# dicom file path
+dicom_file = 'rvlv_ratio_output.dcm'
+# get dicom metadata
+dicom_meta_data = pydicom.read_file(dicom_file)
+# store PixelData attribute information
 temp_bytes = dcm_ds.PixelData
+# store as an array
 temp_byte_array=bytearray(temp_bytes)
+# get number of bytes in array
 num_bytes=len(temp_byte_array)
 
 print('Number of bytes in', os.path.abspath(dicom), 'is',  num_bytes)
 
+# if the number of bytes divded by two has a remainder not equal to 0 then it is odd, else it is even
 if np.mod(num_bytes,2)!=0:
     print('Odd')
 else:
