@@ -1,0 +1,17 @@
+import SimpleITK as sitk
+import numpy as np
+import os
+import pydicom
+
+dicom = 'rvlv_ratio_output.dcm'
+dcm_ds = pydicom.read_file(dicom)
+temp_bytes = dcm_ds.PixelData
+temp_byte_array=bytearray(temp_bytes)
+num_bytes=len(temp_byte_array)
+
+print('Number of bytes in', os.path.abspath(dicom), 'is',  num_bytes)
+
+if np.mod(num_bytes,2)!=0:
+    print('Odd')
+else:
+    print('Even')
