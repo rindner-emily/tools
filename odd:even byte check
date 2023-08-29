@@ -1,14 +1,12 @@
 # Imports
-import SimpleITK as sitk
-import numpy as np
 import os
 import pydicom
 import sys
 
 # Function to check pixel length
-def check_pixel_data_length():
+def check_pixel_data_length(dicom_file):
     # Path name containing dicom file
-    dicom_file = 'file_name.dcm'
+    # dicom_file = '/home/ubuntu/data/rapid-aml-test-data/rapid_mls/real_cases/1052/series/1.3.6.1.4.1.23849.2144917748.16.1634399675871562500/IM-0001-0001.dcm'
     try:
         # Read in dicom file
         ds = pydicom.dcmread(dicom_file)
@@ -18,7 +16,7 @@ def check_pixel_data_length():
             transfer_syntax = ds.file_meta.TransferSyntaxUID
             # Check for uncompressed transfer syntax
             if transfer_syntax == '1.2.840.10008.1.2' or transfer_syntax == '1.2.840.10008.1.2.1' or transfer_syntax == '1.2.840.10008.1.2.2':
-                
+                print(dicom_file)
                 if len(ds.PixelData) % 2 > 0:
                     print("Pixel data length is odd")
                     return 1  # Test failed
@@ -26,15 +24,25 @@ def check_pixel_data_length():
                     print("Pixel data length is even")
                     return 0  # Test succeeded
             else:
-                    print(os.path.abspath(dicom_file), 'does not meet TransferSyntaxUID criteria.')        
+                    print(dicom_file, 'does not meet TransferSyntaxUID criteria.')   
+                    return 2 # File has invalid TransferSyntaxUID    
         else:
             print("Pixel data not found in the DICOM file")
-            return 2  # File cannot be read properly
+            return 3  # File cannot be read properly
     except Exception as e:
         print("An error occurred:", e)
-        return 2  # File cannot be read properly
+        return 3  # File cannot be read properly
+
+# if __name__ == "__main__":
+#     check_pixel_data_length()
 
 if __name__ == "__main__":
-    check_pixel_data_length()
+    if len(sys.argv) < 2:
+        print("Usage: python script_name.py <dicom_file>")
+        sys.exit(2)  
 
-# To run code: python3 test_output_series.py
+    dicom_file_path = sys.argv[1]
+    exit_code = check_pixel_data_length(dicom_file_path)
+    sys.exit(exit_code)
+
+# To run code: python3 test_output_series.py file_name.dcm
