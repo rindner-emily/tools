@@ -45,4 +45,4 @@ if __name__ == "__main__":
     exit_code = check_pixel_data_length(dicom_file_path)
     sys.exit(exit_code)
 
-# To run code: python3 test_output_series.py file_name.dcm
+# To run code: python3 test_output_bytes.py file_name.dcm
