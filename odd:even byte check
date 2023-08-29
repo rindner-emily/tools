@@ -1,24 +1,40 @@
-# imports
+# Imports
 import SimpleITK as sitk
 import numpy as np
 import os
 import pydicom
+import sys
 
-# dicom file path
-dicom_file = 'rvlv_ratio_output.dcm'
-# get dicom metadata
-dicom_meta_data = pydicom.read_file(dicom_file)
-# store PixelData attribute information
-temp_bytes = dcm_ds.PixelData
-# store as an array
-temp_byte_array=bytearray(temp_bytes)
-# get number of bytes in array
-num_bytes=len(temp_byte_array)
+# Function to check pixel length
+def check_pixel_data_length():
+    # Path name containing dicom file
+    dicom_file = 'file_name.dcm'
+    try:
+        # Read in dicom file
+        ds = pydicom.dcmread(dicom_file)
+        # Check if attribute for PixelData exists
+        if hasattr(ds, 'PixelData'):
+            # Get TransferSyntaxUID metadata
+            transfer_syntax = ds.file_meta.TransferSyntaxUID
+            # Check for uncompressed transfer syntax
+            if transfer_syntax == '1.2.840.10008.1.2' or transfer_syntax == '1.2.840.10008.1.2.1' or transfer_syntax == '1.2.840.10008.1.2.2':
+                
+                if len(ds.PixelData) % 2 > 0:
+                    print("Pixel data length is odd")
+                    return 1  # Test failed
+                else:
+                    print("Pixel data length is even")
+                    return 0  # Test succeeded
+            else:
+                    print(os.path.abspath(dicom_file), 'does not meet TransferSyntaxUID criteria.')        
+        else:
+            print("Pixel data not found in the DICOM file")
+            return 2  # File cannot be read properly
+    except Exception as e:
+        print("An error occurred:", e)
+        return 2  # File cannot be read properly
 
-print('Number of bytes in', os.path.abspath(dicom), 'is',  num_bytes)
+if __name__ == "__main__":
+    check_pixel_data_length()
 
-# if the number of bytes divded by two has a remainder not equal to 0 then it is odd, else it is even
-if np.mod(num_bytes,2)!=0:
-    print('Odd')
-else:
-    print('Even')
+# To run code: python3 test_output_series.py
